@@ -1,0 +1,23 @@
+# select base image
+FROM openjdk:1.8-alpine AS build-step
+
+# install maven
+RUN sudo yum -y install maven
+
+# create directory for app
+RUN mkdir /app
+
+# set app dir for running commands
+WORKDIR /app
+
+# get app code
+COPY . /app
+
+# start build
+RUN mvn package
+
+# select base image for deploying
+FROM tomcat
+
+# copy /app/project/target/WebAppCal-1.3.6.war to /home/centos/apache-tomcat-7.0.94/webapps/
+COPY --from=build-step /app/project/target/WebAppCal-1.3.6.war /home/centos/apache-tomcat-7.0.94/webapps/                                                                                                                                  ~                                                                                                                                                           ~                                                        
